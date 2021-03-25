@@ -1,5 +1,4 @@
 #include <stdbool.h>
-
 #include "xorshift.h"
 #include "screen.h"
 
@@ -16,23 +15,24 @@ struct Tetris {
   uint16_t score;
   uint8_t counter;
   uint16_t speed;
-  int debugval;
+  bool shadow;
+  uint16_t shadow_time;
   Xorshift xorshift;
   bool initialized;
 };
 typedef struct Tetris Tetris;
 
-extern void tetris_init(Tetris* tetris);
-extern void tetris_update(Tetris* tetris);
-extern void tetris_render(Tetris* tetris, Screen* screen);
+extern void tetris_init(Tetris *tetris);
+extern void tetris_update(Tetris *tetris);
+extern void tetris_render(Tetris *tetris, Screen* screen);
 
 // dir:
-//   0: left
-//   1: right
-//   2: down
-extern void tetris_move(Tetris* tetris, int dir);
+//   0: Left
+//   1: Right
+//   2: Down
+extern void tetris_move(Tetris *tetris, int dir);
 
 // cw:
-//   0: Counterclockwise
-//   1: Clockwise
-extern void tetris_rotate(Tetris* tetris, int cw);
+//   0: Clockwise
+//   1: Counterclockwise
+extern void tetris_rotate(Tetris *tetris, int cw);
