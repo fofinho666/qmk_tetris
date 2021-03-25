@@ -1,8 +1,8 @@
 #ifndef XORSHIFT_H
 #define XORSHIFT_H
 
-// Xorshift の8ビット版
-// https://blog.goo.ne.jp/sim00/e/33b576696be51efbb3eab4b5c61ffb87 を参考にした
+// 8-bit version of Xorshift
+// Source at https://blog.goo.ne.jp/sim00/e/33b576696be51efbb3eab4b5c61ffb87
 
 struct Xorshift {
   uint8_t x, y, z, t;

@@ -4,7 +4,7 @@
 
 #include "timer.h"
 
-// ブロックの情報
+// Block information
 const int8_t blockdata[][4][2] = {
   // N
   // O
@@ -50,14 +50,14 @@ void tetris_init(Tetris* tetris) {
   tetris->speed = 1000;
   tetris->initialized = true;
 }
-// -4: 左の範囲外
-// -3: 右の範囲外
-// -2: 上の範囲外
-// -1: 下の範囲外
-// 0: 何もない
-// 1: 配置済みブロック
+// -4: Out of range on the left
+// -3: Out of range on the right
+// -2: Out of range above
+// -1: Out of range below
+// 0: nothing
+// 1: Placed block
 int _tetris_get_block_state(Tetris* tetris, int x, int y) {
-  // 範囲外判定
+  // Out of range check
   if (x < 0) {
     return -4;
   }
@@ -70,15 +70,15 @@ int _tetris_get_block_state(Tetris* tetris, int x, int y) {
   if (y >= 40) {
     return -1;
   }
-  // 既存のブロックとの当たり判定
+  // Touch an existing blocks
   if (tetris->blocks[y][x] != 0) {
     return 1;
   }
   return 0;
 }
 
-// 回転させたブロックの座標を返す
-// r には回転させた座標が x1, y1, x2, y2, x3, y3, x4, y4 の順番に並ぶ
+// Rotational coordinates of a block
+// r will have the rotated coordinates arranged as x1, y1, x2, y2, x3, y3, x4, y4.
 void _tetris_get_rotated_pos(int cur, int x, int y, int rot, int r[][2]) {
   const int8_t sins[] = { 0, 1, 0, -1 };
   const int8_t coss[] = { 1, 0, -1, 0 };
@@ -94,7 +94,7 @@ void _tetris_get_rotated_pos(int cur, int x, int y, int rot, int r[][2]) {
   }
 }
 
-// どれかのブロックに当たってるか外側に出てたら 0 以外
+// If it hits any block or go outside, it does not return 0
 int _tetris_is_hit(Tetris* tetris, int cur, int x, int y, int rot) {
   int pos[4][2];
   _tetris_get_rotated_pos(cur, x, y, rot, pos);
@@ -120,9 +120,9 @@ void tetris_rotate(Tetris* tetris, int cw) {
     rot = (tetris->rot + 3) % 4;
   }
 
-  // 現在の位置と上右左に１マスずつ補正した位置を試して、
-  // どことも接触してなければそれを採用する。
-  // どれも接触してたら回転させない
+  // Try the current position and the next position by one square on the top right and left,
+  // Sets that position if nothing touches
+  // Otherwise does not rotate
   const int8_t ts[][2] = {
     { 0, 0 },
     { 0, -1 },
@@ -132,7 +132,7 @@ void tetris_rotate(Tetris* tetris, int cw) {
   for (int i = 0; i < 4; i++) {
     int hit = _tetris_is_hit(tetris, tetris->cur, tetris->curx + ts[i][0], tetris->cury + ts[i][1], rot);
     if (hit == 0) {
-      // 接触しなかった
+      // Didn't touch
       tetris->rot = rot;
       tetris->curx += ts[i][0];
       tetris->cury += ts[i][1];
@@ -141,14 +141,14 @@ void tetris_rotate(Tetris* tetris, int cw) {
   }
 }
 void tetris_next_block(Tetris* tetris) {
-  // 今のブロックを確定させる
+  // Confirm the current block is on the blocks
   int pos[4][2];
   _tetris_get_rotated_pos(tetris->cur, tetris->curx, tetris->cury, tetris->rot, pos);
   for (int i = 0; i < 4; i++) {
     tetris->blocks[pos[i][1]][pos[i][0]] = 1;
   }
 
-  // 列が揃ってたら削除
+  // Delete when all the columns that are aligned
   int score = 1; // 0, 1, 3, 7, 15
   int lines = 0;
   int y = 39;
@@ -165,7 +165,7 @@ void tetris_next_block(Tetris* tetris) {
       n += tetris->blocks[y][x];
     }
     if (n == 10) {
-      // 一列消えた
+      // The line disappeared
       score *= 2;
       lines += 1;
     } else {
@@ -179,21 +179,21 @@ void tetris_next_block(Tetris* tetris) {
 
   tetris->score += score - 1;
   for (int i = 0; i < lines; i++) {
-    // 0.95 倍
+    // Incress the speed by 5%
     tetris->speed = tetris->speed * 95 / 100;
     if (tetris->speed < 50) {
       tetris->speed = 50;
     }
   }
 
-  // 次のブロックを出す
+  // Release the next block
   tetris->cur = tetris->next;
   tetris->rot = tetris->nextrot;
   tetris->curx = 4;
   tetris->cury = 7;
   tetris->next = xorshift_next(&tetris->xorshift) % sizeof(blockdata) / sizeof(blockdata[0]);
   tetris->nextrot = xorshift_next(&tetris->xorshift) % 4;
-  // 既に当たってたらゲームオーバー
+  // If there's already a hit, it's game is over
   int hit = _tetris_is_hit(tetris, tetris->cur, tetris->curx, tetris->cury, tetris->rot);
   if (hit != 0) {
     tetris->gamestate = 1;
@@ -279,7 +279,7 @@ void tetris_render(Tetris* tetris, ScreenMatrix* matrix) {
     }
   }
   if (tetris->gamestate == 0) {
-    // 動いてるブロック
+    // The moving block
     int pos[4][2];
     _tetris_get_rotated_pos(tetris->cur, tetris->curx, tetris->cury, tetris->rot, pos);
     for (uint8_t i = 0; i < 4; i++) {
@@ -288,7 +288,7 @@ void tetris_render(Tetris* tetris, ScreenMatrix* matrix) {
       screen_draw_rect(matrix, x * 3, y * 3, 2, 2, 0);
     }
 
-    // 次のブロック
+    // The next block
     _tetris_get_rotated_pos(tetris->next, 4, 2, tetris->nextrot, pos);
     for (uint8_t i = 0; i < 4; i++) {
       int x = pos[i][0];
@@ -296,10 +296,10 @@ void tetris_render(Tetris* tetris, ScreenMatrix* matrix) {
       screen_draw_rect(matrix, x * 3, y * 3, 2, 2, 0);
     }
 
-    // 横線
+    // The horizontal line
     screen_draw_rect(matrix, 0, 15, 31, 1, 0);
 
-    // ガイドの表示
+    // The block shadow
     int cury = tetris->cury;
     while (true) {
       int hit = _tetris_is_hit(tetris, tetris->cur, tetris->curx, cury + 1, tetris->rot);

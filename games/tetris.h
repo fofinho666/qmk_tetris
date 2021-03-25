@@ -27,12 +27,12 @@ extern void tetris_update(Tetris* tetris);
 extern void tetris_render(Tetris* tetris, ScreenMatrix* matrix);
 
 // dir:
-//   0: 左
-//   1: 右
-//   2: 下
+//   0: left
+//   1: right
+//   2: down
 extern void tetris_move(Tetris* tetris, int dir);
 
 // cw:
-//   0: 反時計回り
-//   1: 時計回り
+//   0: Counterclockwise
+//   1: Clockwise
 extern void tetris_rotate(Tetris* tetris, int cw);
