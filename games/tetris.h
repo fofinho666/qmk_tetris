@@ -24,7 +24,7 @@ typedef struct Tetris Tetris;
 
 extern void tetris_init(Tetris* tetris);
 extern void tetris_update(Tetris* tetris);
-extern void tetris_render(Tetris* tetris, ScreenMatrix* matrix);
+extern void tetris_render(Tetris* tetris, Screen* screen);
 
 // dir:
 //   0: left

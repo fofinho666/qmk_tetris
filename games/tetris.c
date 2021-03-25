@@ -270,11 +270,11 @@ void tetris_update(Tetris* tetris) {
   }
 }
 
-void tetris_render(Tetris* tetris, ScreenMatrix* matrix) {
+void tetris_render(Tetris* tetris, Screen *screen) {
   for (int y = 0; y < 40; y++) {
     for (int x = 0; x < 10; x++) {
       if (tetris->blocks[y][x] != 0) {
-        screen_draw_rect(matrix, x * 3, y * 3, 2, 2, 0);
+        screen_draw_rect(screen, x * 3, y * 3, 2, 2);
       }
     }
   }
@@ -285,7 +285,7 @@ void tetris_render(Tetris* tetris, ScreenMatrix* matrix) {
     for (uint8_t i = 0; i < 4; i++) {
       int x = pos[i][0];
       int y = pos[i][1];
-      screen_draw_rect(matrix, x * 3, y * 3, 2, 2, 0);
+      screen_draw_rect(screen, x * 3, y * 3, 2, 2);
     }
 
     // The next block
@@ -293,11 +293,11 @@ void tetris_render(Tetris* tetris, ScreenMatrix* matrix) {
     for (uint8_t i = 0; i < 4; i++) {
       int x = pos[i][0];
       int y = pos[i][1];
-      screen_draw_rect(matrix, x * 3, y * 3, 2, 2, 0);
+      screen_draw_rect(screen, x * 3, y * 3, 2, 2);
     }
 
     // The horizontal line
-    screen_draw_rect(matrix, 0, 15, 31, 1, 0);
+    screen_draw_rect(screen, 0, 15, 31, 1);
 
     // The block shadow
     int cury = tetris->cury;
@@ -312,11 +312,9 @@ void tetris_render(Tetris* tetris, ScreenMatrix* matrix) {
       for (uint8_t i = 0; i < 4; i++) {
         int x = pos[i][0];
         int y = pos[i][1];
-        screen_draw_rect(matrix, x * 3, y * 3, 3, 3, 1);
+        screen_draw_rect(screen, x * 3, y * 3, 3, 3);
       }
       break;
     }
   }
-
-  screen_render_number(matrix, 0, 0, tetris->score);
 }
